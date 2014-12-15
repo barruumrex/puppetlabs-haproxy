@@ -24,15 +24,19 @@
 #   The haproxy service's instance name (or, the title of the
 #    haproxy::frontend resource). This must match up with a declared
 #    haproxy::frontend resource.
+#    
+# [*action*]
+#   The proxy keyword that you want declared after acl declaration.
 #
-# [*conditional*]
-#   The conditional for matching this acl.
+# [*conditions*]
+#   The list of acls the keyword is conditional on.
 #
 
-define haproxy::acl (
+define haproxy::acl_action (
   $listening_service = undef,
   $frontend_service  = undef,
-  $conditional = ''
+  $action            = undef,
+  $conditions = []
 ) {
 
   if $listening_service and $frontend_service {
@@ -51,9 +55,9 @@ define haproxy::acl (
 
   # Template uses $ipaddresses, $server_name, $ports, $option
   concat::fragment { "${service}_acl_${name}":
-    order   => "${order}-${service}-02-${name}",
+    order   => "${order}-${service}-03-${name}",
     ensure  => $ensure,
     target  => '/etc/haproxy/haproxy.cfg',
-    content => template('haproxy/haproxy_acl.erb'),
+    content => template('haproxy/haproxy_acl_action.erb'),
   }
 }
