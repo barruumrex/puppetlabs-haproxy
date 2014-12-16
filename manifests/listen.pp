@@ -122,12 +122,14 @@ define haproxy::listen (
     content => template('haproxy/haproxy_listen_block.erb'),
   }
 
-  unless $exported_name {
-    $exported_name = $name
+  if $exported_name {
+    $collection_name = $exported_name
+  } else {
+    $collection_name = $name
   }
 
   if $collect_exported {
-    haproxy::balancermember::collect_exported { $exported_name: }
+    haproxy::balancermember::collect_exported { $collection_name: }
   }
   # else: the resources have been created and they introduced their
   # concat fragments. We don't have to do anything about them.
