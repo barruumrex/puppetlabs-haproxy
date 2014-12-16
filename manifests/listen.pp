@@ -54,6 +54,11 @@
 #    know the full set of balancermembers in advance and use haproxy::balancermember
 #    with array arguments, which allows you to deploy everything in 1 run)
 #
+# [*exported_name*]
+#   String, default undefined. This string overrides the name of the balancermemeber
+#   collection for when you want to use the same balancermember collection in multiple
+#   backends.
+#
 # === Examples
 #
 #  Exporting the resource for a balancer member:
@@ -88,6 +93,7 @@ define haproxy::listen (
     ],
     'balance' => 'roundrobin'
   },
+  $exported_name                = undef,
   # Deprecated
   $bind_options                 = '',
 ) {
@@ -116,8 +122,12 @@ define haproxy::listen (
     content => template('haproxy/haproxy_listen_block.erb'),
   }
 
+  unless $exported_name {
+    $exported_name = $name
+  }
+
   if $collect_exported {
-    haproxy::balancermember::collect_exported { $name: }
+    haproxy::balancermember::collect_exported { $exported_name: }
   }
   # else: the resources have been created and they introduced their
   # concat fragments. We don't have to do anything about them.

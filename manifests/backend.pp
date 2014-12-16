@@ -30,6 +30,11 @@
 #    haproxy::balancermember with array arguments, which allows you to deploy
 #    everything in 1 run)
 #
+# [*exported_name*]
+#   String, default undefined. This string overrides the name of the balancermemeber
+#   collection for when you want to use the same balancermember collection in multiple
+#   backends.
+#
 # === Examples
 #
 #  Exporting the resource for a backend member:
@@ -57,7 +62,8 @@ define haproxy::backend (
       'ssl-hello-chk'
     ],
     'balance' => 'roundrobin'
-  }
+  },
+  $exported_name    = undef
 ) {
 
   if defined(Haproxy::Listen[$name]) {
@@ -71,8 +77,12 @@ define haproxy::backend (
     content => template('haproxy/haproxy_backend_block.erb'),
   }
 
+  unless $exported_name {
+    $exported_name = $name
+  }
+
   if $collect_exported {
-    haproxy::balancermember::collect_exported { $name: }
+    haproxy::balancermember::collect_exported { $exported_name: }
   }
   # else: the resources have been created and they introduced their
   # concat fragments. We don't have to do anything about them.
