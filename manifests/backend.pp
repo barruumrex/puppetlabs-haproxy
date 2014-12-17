@@ -84,7 +84,9 @@ define haproxy::backend (
   }
 
   if $collect_exported {
-    haproxy::balancermember::collect_exported { $collection_name: }
+    haproxy::balancermember::collect_exported { "${name}-collection":
+      collection_name => $collection_name 
+    }
   }
   # else: the resources have been created and they introduced their
   # concat fragments. We don't have to do anything about them.
