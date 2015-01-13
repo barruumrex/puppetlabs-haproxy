@@ -55,6 +55,10 @@
 #   If true, then add "cookie SERVERID" stickiness options.
 #    Default false.
 #
+# [*collector*]
+#   String, default undefined. This string overrides the name of the listening_service
+#   in the concat order. Intended for use with exported resources.
+#
 # === Examples
 #
 #  Exporting the resource for a balancer member:
@@ -93,12 +97,18 @@ define haproxy::balancermember (
   $ipaddresses  = $::ipaddress,
   $ensure       = 'present',
   $options      = '',
-  $define_cookies = false
+  $define_cookies = false,
+  $collector    = undef
 ) {
 
+  if $collector {
+    $order_service_name = $collector
+  } else {
+    $order_service_name = $listening_service 
+  }
   # Template uses $ipaddresses, $server_name, $ports, $option
-  concat::fragment { "${listening_service}_balancermember_${name}":
-    order   => "20-${listening_service}-01-${name}",
+  concat::fragment { "${order_service_name}_balancermember_${name}":
+    order   => "20-${order_service_name}-01-${name}",
     ensure  => $ensure,
     target  => '/etc/haproxy/haproxy.cfg',
     content => template('haproxy/haproxy_balancermember.erb'),
