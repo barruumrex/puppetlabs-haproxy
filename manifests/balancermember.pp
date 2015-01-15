@@ -98,7 +98,7 @@ define haproxy::balancermember (
   $ensure       = 'present',
   $options      = '',
   $define_cookies = false,
-  $collector    = undef
+  $collector    = ''
 ) {
 
   if $collector {

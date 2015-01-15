@@ -79,14 +79,16 @@ define haproxy::backend (
 
   if $exported_name {
     $collection_name = $exported_name
+    $collector       = $name
   } else {
     $collection_name = $name
+    $collector       = ''
   }
 
   if $collect_exported {
     haproxy::balancermember::collect_exported { "${name}-collection":
       collection_name => $collection_name,
-      collector       => $name
+      collector       => $collector
     }
   }
   # else: the resources have been created and they introduced their
